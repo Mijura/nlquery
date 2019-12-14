@@ -7,10 +7,10 @@ def main(argv):
 
     while True:
         try:
-            line = raw_input("Enter line: ")
-            print engine.query(line, format_='plain')
+            line = input("Enter line: ")
+            print(engine.query(line, format_='plain'))
         except EOFError:
-            print "Bye!"
+            print("Bye!")
             sys.exit(0)
 
 if __name__ == "__main__":

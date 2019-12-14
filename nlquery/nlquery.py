@@ -2,10 +2,10 @@ from collections import OrderedDict
 from lango.matcher import match_rules
 from lango.parser import StanfordServerParser
 from pattern.en import singularize
-from wikidata import WikiData
-from utils import first
-from api_adapter import LoggingInterface
-from answer import Answer
+from nlquery.wikidata import WikiData
+from nlquery.utils import first
+from nlquery.api_adapter import LoggingInterface
+from nlquery.answer import Answer
 
 from threading import local
 

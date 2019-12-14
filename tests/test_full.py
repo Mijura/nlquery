@@ -29,7 +29,7 @@ class IntegrationTest(unittest.TestCase):
         for quest, ans in qa:
             resp = self.query_engine.query(quest)
             assert ans in resp
-            print quest, ans, resp
+            print(quest, ans, resp)
 
     def test_find_entity(self):
         qa = [
@@ -46,4 +46,4 @@ class IntegrationTest(unittest.TestCase):
         for quest, ans in qa:
             resp = self.query_engine.query(quest)
             assert ans in resp
-            print quest, ans, resp
+            print(quest, ans, resp)

@@ -6,7 +6,7 @@ def conv_to_str(value):
     if isinstance(value, datetime):
         return arrow.get(value).format("MMMM D, YYYY")
     else:
-        return unicode(value)
+        return str(value)
 
 
 def isfloat(value):

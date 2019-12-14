@@ -59,7 +59,7 @@ class RestAdapter(LoggingInterface):
             greq = grequests.get(url, params=params, headers=headers)
             response = grequests.map([greq])[0]
         except requests.exceptions.ConnectionError:
-            print 'ConnectionError'
+            print('ConnectionError')
             return None
         self.info(response.url, _format=False)
 
