@@ -1,17 +1,17 @@
 from nlquery.nlquery import NLQueryEngine
 import os
 import sys
+from flask import Flask, request
+from gevent import monkey
 
-def main(argv):
-    engine = NLQueryEngine('localhost', 9000)
+monkey.patch_all()
+app = Flask(__name__)
+engine = NLQueryEngine('localhost', 9000)
 
-    while True:
-        try:
-            line = input("Enter line: ")
-            print(engine.query(line, format_='plain'))
-        except EOFError:
-            print("Bye!")
-            sys.exit(0)
+@app.route("/query", methods=['POST'])
+def query():
+    query = request.json.get('query')
+    return engine.query(query, format_='plain')
 
-if __name__ == "__main__":
-    main(sys.argv[1:])
+if __name__ == '__main__':
+    app.run()
