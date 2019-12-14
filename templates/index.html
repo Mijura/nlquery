@@ -1,0 +1,53 @@
+<h1> NLQuery (by Michael Young) demo</h1>
+
+<hr>
+
+<input id="question_text" type="text">
+<br>
+<input id="submit_button" type="button" value="ask">
+
+<div id="results">
+</div>
+
+<script>
+
+    question_input = document.getElementById('question_text')
+    submit_button = document.getElementById('submit_button')
+    results = document.getElementById('results')
+
+    question_input.addEventListener('keydown', e => e.keyCode == 13 ? ask() : noop())
+    submit_button.addEventListener('click', e => ask())
+
+    function ask() {
+
+        text = question_input.value
+
+        fetch('/query', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query: text })
+        }
+        ).then(response => response.json()
+        ).then(data => render_results(data)
+        ).catch(e => alert(`Error:  ${e}`))
+
+    }
+
+
+    function render_results(data) {
+
+        results.innerHTML = '' // clear content
+
+        answer = document.createElement('p')
+        answer.innerHTML = data.answer
+
+        results.appendChild(answer)
+
+    }
+
+    function noop() { }
+
+</script>
