@@ -45,6 +45,8 @@ class NLQueryEngine(LoggingInterface):
             ('( NP ( NP:subject-o ( NNP ) ( NNP ) ( POS ) ) ( NN/NNS:prop-o ) $ )', {}),
             # What is (Barack Obama's birth day)
             ('( NP ( NP:subject-o ( NNP ) ( NNP ) ( POS ) ) ( NN/JJ:prop-o ) ( NN/NNS:prop2-o ) )', {}),
+            # What was (the Soviet Union’s motto)
+            ('( NP ( NP:subject-o ( DT ) ( NNP ) ( NNP ) ( POS ) ) ( NN:prop-o ) )', {}),
             ('( NP:subject-o )', {}),
         ])
 
@@ -70,10 +72,16 @@ class NLQueryEngine(LoggingInterface):
                 'qtype_t': OrderedDict([
                     # What religion
                     ('( WHNP ( WDT:qtype-o=what ) ( NN:prop3-o ) )', {}),
+                    # What genre
+                    ('( WHNP ( WDT:qtype-o=what ) ( NP ( NN:prop3-o ) ) )', {}),
                     # How many/tall
                     ('( WHADJP ( WRB:qtype-o ) ( JJ:jj-o ) )', {}),
+                    # which country
+                    ('( WHNP ( WDT:qtype-o=which ) ( NN ) )', {}),
                     # What/where/who
                     ('( WHNP/WHADVP:qtype-o )', {}),
+                    
+
                 ]),
                 'sq_t': {
                     # What ethnicity is Obama
@@ -90,6 +98,8 @@ class NLQueryEngine(LoggingInterface):
                     '( SQ ( VBZ:action-o ) ( NP:subj_t ) ( VP:prop-o ) )': {
                         'subj_t': self.subj_rules,
                     },
+                    # Which country is Deshauna Barber a citizen of?
+                    '( SQ ( VBZ:action-o ) ( NP:subject-o ( NNP ) ( NNP ) ) ( NP ( NP ( DT ) ( NN:prop-o ) ) ( PP ( IN ) ) ) )': {},
                     # What is Obama
                     '( SQ ( VBZ/VBD/VBP:action-o ) ( NP:subj_t ) )': {
                         'subj_t': self.subj_rules
@@ -174,6 +184,16 @@ class NLQueryEngine(LoggingInterface):
         Returns:
             Answer: Answer from query, or empty Answer if None
         """
+        print()
+        print(qtype)
+        print(subject)
+        print(action)
+        print(jj)
+        print(prop)
+        print(prop2)
+        print(prop3)
+        print()
+
         if jj == 'old':
             # How old is Obama?
             prop = 'age'
@@ -192,6 +212,24 @@ class NLQueryEngine(LoggingInterface):
             if action not in ['is', 'was']:
                 prop = action
 
+        if qtype == 'who' and prop.endswith('ed'):
+            prop += ' by'
+
+        if qtype == 'where' and prop == 'founded':
+            prop = 'location of formation'
+        
+        if qtype == 'where' and action == 'is':
+            prop = 'located'
+
+        if qtype == 'how' and prop == 'died':
+            prop = 'manner of death'
+        
+        if qtype == 'where' and prop == 'died':
+            prop = 'place of death'
+
+        if prop in ['birth day', 'birthday']:
+            prop = 'date of birth'
+
         ans = self.get_property(qtype, subject, prop)
         if not ans:
             ans = Answer()
@@ -201,6 +239,11 @@ class NLQueryEngine(LoggingInterface):
             'subject': subject,
             'prop': prop,
         }
+
+        if(prop=="population"):
+            ans.data = ans.data[-1]
+
+        print(ans.params)
         return ans
 
     def get_prop_tuple(self, prop=None, value=None, op=None, value_units=None, pp_t=None):
@@ -338,7 +381,7 @@ class NLQueryEngine(LoggingInterface):
             match_rules(tree, self.find_entity_rules, self.find_entity_query),
             match_rules(tree, self.subject_prop_rules, self.subject_query),
         ])
-
+        
         if not ans:
             ans = Answer()
 

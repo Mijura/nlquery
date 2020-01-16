@@ -20,7 +20,8 @@
 
     function ask() {
 
-        text = question_input.value
+        text = question_input.value;
+        text = normalizeApostrophes(text);
 
         fetch('/query', {
             method: 'POST',
@@ -36,6 +37,22 @@
 
     }
 
+    function normalizeApostrophes(question) {
+        question = question.replace(/’|´|`/g, '\'');
+        question = question.replace(/\bwhat\'s\b/g, 'what is');
+        question = question.replace(/\bWhat\'s\b/g, 'What is');
+        question = question.replace(/\bwho\'s\b/g, 'who is');
+        question = question.replace(/\bWho\'s\b/g, 'Who is');
+        question = question.replace(/\bwhat\'re\b/g, 'what are');
+        question = question.replace(/\bWhat\'re\b/g, 'What are');
+        question = question.replace(/\bWho\'re\b/g, 'Who are');
+        question = question.replace(/\bwho\'re\b/g, 'who are');
+        question = question.replace(/\bwhats\b/g, 'what is');
+        question = question.replace(/\bWhats\b/g, 'What is');
+        question = question.replace(/\bwhos\b/g, 'who is');
+        question = question.replace(/\bWhos\b/g, 'Who is');
+        return question;
+    }
 
     function render_results(data) {
 

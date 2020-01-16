@@ -109,7 +109,7 @@ class WikiData(RestAdapter):
             return None
 
         query = """
-        SELECT ?valLabel ?type
+        SELECT ?valLabel ?type (YEAR(?date) as ?year)
         WHERE {
         """
         sub_queries = []
@@ -120,15 +120,16 @@ class WikiData(RestAdapter):
                 OPTIONAL {
                     ?prop psv:%s ?propVal .
                     ?propVal rdf:type ?type .
+                    ?prop pq:P585 ?date.
                 }
             }""" % (subject_id, pid, pid, pid) 
             sub_queries.append(sub_query)
         query += ' UNION '.join(sub_queries)
         query += """
             SERVICE wikibase:label { bd:serviceParam wikibase:language "en"} 
-        }
+        } ORDER BY ?year
         """
-
+        
         result =  self._query_wdsparql(query)
         bindings = dget(result, 'results.bindings')
         return WikiDataAnswer(sparql_query=query, bindings=bindings)
@@ -265,7 +266,7 @@ class WikiData(RestAdapter):
         prop_id = None
 
         if prop is None:
-            return self._get_desc(subject)
+            return prop
 
         if prop == 'age':
             bday_ans = self._get_property(subject, 'date of birth', 'P569')
@@ -285,6 +286,12 @@ class WikiData(RestAdapter):
 
         if prop == 'height':
             prop_id = 'P2044,P2048'
+
+        if prop == 'motto':
+            prop_id = 'P1546'
+
+        if prop == 'population':
+            prop_id = 'P1082'
 
         if prop in ['nickname', 'known as', 'alias', 'called']:
             return self._get_aliases(subject)
